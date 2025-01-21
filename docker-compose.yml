@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: _docker/php/php.Dockerfile
+    volumes:
+      - ./:/var/www/test_catalog
+    ports:
+        - "9001:9001"
+    depends_on:
+      - mysql
+    container_name: app
+    networks:
+      - app_network
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3316:3306"
+    env_file:
+      - _docker/mysql/mysql.env
+    container_name: mysql_2
+    networks:
+      - app_network
+networks:
+  app_network:
+    driver: bridge
