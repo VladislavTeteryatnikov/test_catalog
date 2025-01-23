@@ -98,24 +98,42 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Проверяем, существует ли продукт
+        //Проверяем, существует ли продукт
         $product = Product::available()->findOrFail($id);
 
-        // Валидация данных
-        $validated = $request->validate([
+        //Получаем роль из конфига
+        $role = config('products.role');
+
+        //Правила валидации
+        $rules = [
             'product_name' => 'required|string|min:10',
-            'product_article' => 'required|regex:/^[a-zA-Z0-9]+$/|unique:products,article,' . $id,
             'product_status' => 'required|in:available,unavailable',
             'product_data' => 'nullable|json',
-        ]);
+        ];
+
+        //Если пользователь — админ, разрешаем редактирование артикула
+        if ($role === 'admin') {
+            $rules['product_article'] = 'required|regex:/^[a-zA-Z0-9]+$/|unique:products,article,' . $id;
+        }
+
+        //Валидируем данные
+        $validated = $request->validate($rules);
+
+        $data = [
+            'name' => $validated['product_name'],
+            'status' => $validated['product_status'],
+            'data' => $validated['product_data'],
+        ];
+
+        if ($role === 'admin') {
+            $data = [
+                'article' => $validated['product_article'],
+            ];
+        }
 
         //Обновлям продукт
-        $product->update([
-                'name' => $validated['product_name'],
-                'article' => $validated['product_article'],
-                'status' => $validated['product_status'],
-                'data' => $validated['product_data'],
-            ]);
+        $product->update($data);
+
         return redirect()->route('products.show', $id);
     }
 

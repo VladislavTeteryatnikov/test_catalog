@@ -23,4 +23,4 @@ RUN curl -sS https://getcomposer.org/installer | php -- \
     --filename=composer \
     --install-dir=/usr/local/bin
 
-WORKDIR /var/www/test_docker
+WORKDIR /var/www/test_catalog

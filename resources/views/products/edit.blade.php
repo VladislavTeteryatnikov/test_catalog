@@ -28,14 +28,16 @@
                                     </div>
                                     @enderror
 
-                                    <!-- Поле для article -->
-                                    <label>{{__('Артикул')}}</label>
-                                    <input type="text" name="product_article" class="form-control" value="{{old('product_article') ?? $product->article}}">
-                                    @error('product_article')
-                                    <div class="small text-danger">
-                                        {{ $errors->first('product_article') }}
-                                    </div>
-                                    @enderror
+                                    @if(config('products.role') === 'admin')
+                                        <!-- Поле для article -->
+                                        <label>{{__('Артикул')}}</label>
+                                        <input type="text" name="product_article" class="form-control" value="{{old('product_article') ?? $product->article}}">
+                                        @error('product_article')
+                                        <div class="small text-danger">
+                                            {{ $errors->first('product_article') }}
+                                        </div>
+                                        @enderror
+                                    @endif
 
                                     <!-- Поле для status -->
                                     <label for="product_status">{{__('Статус')}}</label>
