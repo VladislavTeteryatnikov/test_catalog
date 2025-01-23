@@ -31,6 +31,14 @@ services:
     container_name: mysql_2
     networks:
       - app_network
+  mailhog:
+      image: mailhog/mailhog
+      ports:
+          - "1025:1025"
+          - "8025:8025"
+      container_name: mailhog
+      networks:
+          - app_network
 networks:
   app_network:
     driver: bridge

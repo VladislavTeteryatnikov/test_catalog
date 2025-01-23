@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendProductNotificationJob;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -55,6 +56,9 @@ class ProductController extends Controller
             'status' => $validated['product_status'],
             'data' => $validated['product_data'],
         ]);
+
+        // Отправляем уведомление в очередь
+        SendProductNotificationJob::dispatch($product);
 
         return redirect()->route('products.index');
     }
