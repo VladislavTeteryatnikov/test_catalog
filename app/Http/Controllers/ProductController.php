@@ -119,6 +119,7 @@ class ProductController extends Controller
         //Валидируем данные
         $validated = $request->validate($rules);
 
+        //Костыль из-за того что имена полей формы и колонок в таблице бд отличаются
         $data = [
             'name' => $validated['product_name'],
             'status' => $validated['product_status'],
@@ -126,12 +127,10 @@ class ProductController extends Controller
         ];
 
         if ($role === 'admin') {
-            $data = [
-                'article' => $validated['product_article'],
-            ];
+            $data['article'] = $validated['product_article'];
         }
 
-        //Обновлям продукт
+        //Обновляем продукт
         $product->update($data);
 
         return redirect()->route('products.show', $id);
@@ -150,5 +149,20 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('products.index');
+    }
+
+    public function getListProducts()
+    {
+        $products = Product::available()->orderByDesc('id')->paginate(10);
+
+        // Принудительно меняю json на массив, чтобы при конвертации обратно в json был более читаемый вид
+        foreach ($products as $product) {
+            if ($product->data) {
+                $product->data = is_array($product->data) ? $product->data : json_decode($product->data, true);
+            }
+        }
+
+        return response()->json($products);
+
     }
 }

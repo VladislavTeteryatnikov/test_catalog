@@ -10,7 +10,9 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'article', 'status', 'data'];
+    protected $fillable = ['name', 'article', 'status', 'data',];
+
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at',];
 
     /**
      * Local scope to filter only available products.
