@@ -16,7 +16,7 @@ class ProductController extends Controller
     public function index()
     {
         //Продукты со статусом 'available' отсортированные по id по убыванию
-        $products = Product::available()->orderByDesc('id')->get();
+        $products = Product::available()->orderByDesc('id')->paginate(9);
 
         return view('products.index')
             ->with('products', $products);
@@ -57,7 +57,7 @@ class ProductController extends Controller
             'data' => $validated['product_data'],
         ]);
 
-        // Отправляем уведомление в очередь
+        // Отправляем задачу для отправки email при создании продукта в очередь
         SendProductNotificationJob::dispatch($product);
 
         return redirect()->route('products.index');
@@ -155,11 +155,17 @@ class ProductController extends Controller
         return redirect()->route('products.index');
     }
 
+    /**
+     * Метод для получения списка всех продуктов по api
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getListProducts()
     {
+        // Все доступные продукты
         $products = Product::available()->orderByDesc('id')->paginate(10);
 
-        // Принудительно меняю json на массив, чтобы при конвертации обратно в json был более читаемый вид
+        // Принудительно меняю json формат у свойства на массив, чтобы при конвертации обратно в json был более читаемый вид
         foreach ($products as $product) {
             if ($product->data) {
                 $product->data = is_array($product->data) ? $product->data : json_decode($product->data, true);
@@ -167,6 +173,5 @@ class ProductController extends Controller
         }
 
         return response()->json($products);
-
     }
 }

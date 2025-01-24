@@ -5,16 +5,15 @@
     @section('content')
         <section>
             <div class="container">
-                <div class="col-12 col-md-8 col-lg-6 offset-md-2 offset-lg-3">
-                    <a class="btn btn-primary" href="{{ route('products.create')  }}" role="button">
+                <div class="col-12 col-md-8 col-lg-6">
+                    <h2 class="my-4">{{__('Список продуктов')}}</h2>
+                    <a class="btn btn-primary mb-4" href="{{ route('products.create')  }}" role="button">
                         {{__('Добавить продукт')}}
                     </a>
                 </div>
                 @if($products->isEmpty())
                     <h5 class="row">{{__('Нет ни одного продукта')}}</h5>
                 @else
-                    <h2 class="my-4">{{__('Список продуктов')}}</h2>
-
                     <div class="row">
                         @foreach($products as $product)
                             <div class="col-md-4">
@@ -34,8 +33,11 @@
                                 </div>
                             </div>
                         @endforeach
+                            <div class="d-flex justify-content-center">
+                                {{ $products->links('pagination::bootstrap-4') }}
+                            </div>
+                    </div>
                 @endif
-            </div>
         </section>
     @endsection
 
