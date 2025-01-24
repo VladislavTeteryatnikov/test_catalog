@@ -43,6 +43,7 @@ class ProductCreatedNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        // Формируем email
         return (new MailMessage)
                     ->subject('Новый продукт создан')
                     ->line('Продукт "' . $this->product->name . '" был успешно создан.')

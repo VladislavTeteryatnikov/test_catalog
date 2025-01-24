@@ -38,6 +38,7 @@ class SendProductNotificationJob implements ShouldQueue
         // Получаем Email из конфига
         $email = config('products.email');
 
+        // Отправляем email, используя Notification
         if ($email) {
             Notification::route('mail', $email)->notify(new ProductCreatedNotification($this->product));
         }
