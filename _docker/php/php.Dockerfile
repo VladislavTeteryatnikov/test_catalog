@@ -29,12 +29,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- \
     --filename=composer \
     --install-dir=/usr/local/bin
 
-RUN curl -sSL https://github.com/vishnubob/wait-for-it/releases/download/v2.4.2/wait-for-it.sh -o /usr/local/bin/wait-for-it && \
-    chmod +x /usr/local/bin/wait-for-it
-
-# Устанавливаем зависимости Laravel
-WORKDIR /var/www/test_catalog
-RUN composer install --no-dev --optimize-autoloader
+# Устанавливаем владельца файлов
+RUN chown -R www-data:www-data /var/www/test_catalog
 
 # Разрешаем запись в storage и bootstrap/cache
 RUN chown -R www-data:www-data /var/www/test_catalog/storage /var/www/test_catalog/bootstrap/cache
@@ -43,7 +39,11 @@ RUN chown -R www-data:www-data /var/www/test_catalog/storage /var/www/test_catal
 COPY _docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+# Копируем конфиг supervisor
 COPY _docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Устанавливаем entrypoint
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# Устанавливаем рабочую директорию
+WORKDIR /var/www/test_catalog
+
+# Запускаем установку зависимостей через CMD и запускаем entrypoint
+CMD ["sh", "-c", "composer install --no-dev --optimize-autoloader --no-scripts && exec /usr/local/bin/entrypoint.sh"]
